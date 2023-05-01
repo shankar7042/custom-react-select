@@ -1,13 +1,8 @@
 import { useState } from "react";
 import Select, { SelectOption } from "./Select";
+import data from "./countries.json";
 
-const options = [
-  { label: "First", value: 1 },
-  { label: "Second", value: 2 },
-  { label: "Third", value: 3 },
-  { label: "Forth", value: 4 },
-  { label: "Fifth", value: 5 },
-];
+const options = data;
 
 function App() {
   const [value1, setValue1] = useState<SelectOption[]>([options[0]]);

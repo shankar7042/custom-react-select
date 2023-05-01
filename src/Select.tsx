@@ -26,12 +26,14 @@ function Select({ multiple, value, onChange, options }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     if (isOpen) setHighlightedIndex(0);
   }, [isOpen]);
 
   useEffect(() => {
+    let id: number;
     const handler = (e: KeyboardEvent) => {
       if (e.target !== containerRef.current) return;
 
@@ -57,15 +59,36 @@ function Select({ multiple, value, onChange, options }: SelectProps) {
         case "Escape":
           setIsOpen(false);
           break;
+        default: {
+          id = setTimeout(() => {
+            setQuery("");
+          }, 1000);
+        }
       }
     };
 
     containerRef.current?.addEventListener("keydown", handler);
-
     return () => {
       containerRef.current?.removeEventListener("keydown", handler);
+      clearTimeout(id);
     };
   }, [isOpen, highlightedIndex, options]);
+
+  useEffect(() => {
+    const handler2 = (e: KeyboardEvent) => {
+      setQuery((query) => query + e.key);
+      const searchedOption = options.find((option) => {
+        return option.label.toLowerCase().startsWith(query);
+      });
+      if (searchedOption) selectOption(searchedOption);
+    };
+
+    containerRef.current?.addEventListener("keydown", handler2);
+
+    return () => {
+      containerRef.current?.removeEventListener("keydown", handler2);
+    };
+  }, [options, query]);
 
   const handleClearButton = (e: React.MouseEvent) => {
     e.stopPropagation();
